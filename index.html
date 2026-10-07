@@ -658,8 +658,8 @@
       notFound = []; saveIds(); setBusy(false);
       notify(`Read ${plural(leadIds.length,"Lead Id")} from ${file.name}.`);
       fetchFromSalesforce();
+    });
     $("#lead-head").innerHTML = columns.map((name,index)=>`<th${index===0?" class=\"sticky-col\"":""}>${escapeHtml(name.toUpperCase())}</th>`).join("");
-    renderAll();
     renderAll();
     leadIds = loadIds();
     if (leadIds.length) { setBusy(false); fetchFromSalesforce(); }
