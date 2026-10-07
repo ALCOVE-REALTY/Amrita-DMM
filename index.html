@@ -1,0 +1,519 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f6f7fb">
+  <title>Lead overview · Northstar Realty</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #17243c;
+      --muted: #8290a5;
+      --line: #e9edf3;
+      --canvas: #f6f7fb;
+      --white: #fff;
+      --navy: #17243c;
+      --purple: #7258e8;
+      --purple-soft: #f0edff;
+      --green: #19866a;
+      --green-soft: #e9f7f1;
+      --amber: #bd7b27;
+      --amber-soft: #fff4e3;
+      --red: #cb5c67;
+      --red-soft: #fff0f1;
+      --shadow: 0 5px 22px rgba(31, 44, 71, .045);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--canvas); color: var(--ink); font-size: 13px; }
+    button, input, select { font: inherit; }
+    button { cursor: pointer; }
+    .app { min-height: 100vh; }
+    .sidebar {
+      background: var(--navy); bottom: 0; color: #aeb9cd; left: 0; padding: 25px 16px;
+      position: fixed; top: 0; width: 224px; z-index: 5;
+    }
+    .brand { align-items: center; color: #fff; display: flex; gap: 11px; font-size: 15px; font-weight: 700; letter-spacing: -.3px; padding: 1px 9px 34px; }
+    .brand-mark { align-items: center; background: linear-gradient(145deg,#a496ff,#7155e8); border-radius: 10px; color: white; display: inline-flex; height: 31px; justify-content: center; width: 31px; }
+    .nav-label { color: #72809a; font-size: 10px; font-weight: 700; letter-spacing: 1.2px; margin: 5px 10px 11px; text-transform: uppercase; }
+    .nav-item { align-items: center; border-radius: 8px; color: #aeb9cd; display: flex; gap: 12px; margin: 3px 0; padding: 11px 12px; }
+    .nav-item.active { background: #283650; color: #fff; }
+    .nav-item svg { height: 17px; opacity: .9; width: 17px; }
+    .nav-spacer { height: 26px; }
+    .sidebar-bottom { bottom: 20px; left: 16px; position: absolute; right: 16px; }
+    .workspace { align-items: center; border-top: 1px solid #34415a; display: flex; gap: 10px; padding: 17px 7px 0; }
+    .avatar { align-items: center; background: #e9e5ff; border-radius: 50%; color: #614ad1; display: inline-flex; flex: 0 0 auto; font-size: 11px; font-weight: 700; height: 33px; justify-content: center; width: 33px; }
+    .workspace small { color: #8391a8; display: block; font-size: 10px; margin-top: 3px; }
+    .main { margin-left: 224px; min-height: 100vh; }
+    .topbar { align-items: center; background: rgba(255,255,255,.86); border-bottom: 1px solid var(--line); display: flex; height: 65px; justify-content: space-between; padding: 0 34px; }
+    .crumb { color: var(--muted); font-size: 12px; }
+    .crumb strong { color: var(--ink); font-weight: 600; }
+    .top-actions { align-items: center; display: flex; gap: 16px; }
+    .icon-button { align-items: center; background: transparent; border: 0; color: #718097; display: inline-flex; height: 34px; justify-content: center; position: relative; width: 34px; }
+    .notice-dot { background: #ec777a; border: 2px solid white; border-radius: 50%; height: 8px; position: absolute; right: 6px; top: 6px; width: 8px; }
+    .top-divider { background: var(--line); height: 26px; width: 1px; }
+    .content { margin: 0 auto; max-width: 1540px; padding: 31px 34px 44px; }
+    .page-heading { align-items: flex-end; display: flex; justify-content: space-between; margin-bottom: 23px; }
+    h1 { font-size: 25px; letter-spacing: -.8px; margin: 0; }
+    .subtitle { color: var(--muted); font-size: 12px; margin: 7px 0 0; }
+    .heading-actions { align-items: center; display: flex; gap: 9px; }
+    .button { align-items: center; background: #fff; border: 1px solid #dfe4ed; border-radius: 7px; color: #44516a; display: inline-flex; font-size: 11px; font-weight: 600; gap: 8px; justify-content: center; min-height: 36px; padding: 0 13px; transition: .15s ease; }
+    .button:hover { border-color: #b6bed0; }
+    .button.primary { background: var(--purple); border-color: var(--purple); box-shadow: 0 3px 8px #7258e833; color: #fff; }
+    .button.primary:hover { background: #6248db; }
+    .button svg { height: 15px; width: 15px; }
+    .button input { display: none; }
+    .sample-note { align-items: center; background: #f0edff; border: 1px solid #e4dfff; border-radius: 7px; color: #6955c6; display: flex; font-size: 10px; gap: 7px; margin-bottom: 18px; padding: 9px 12px; }
+    .sample-note svg { flex: 0 0 auto; height: 14px; width: 14px; }
+    .metrics { display: grid; gap: 15px; grid-template-columns: repeat(4,minmax(0,1fr)); margin-bottom: 17px; }
+    .card { background: var(--white); border: 1px solid #edf0f5; border-radius: 10px; box-shadow: var(--shadow); }
+    .metric { min-height: 128px; padding: 17px 18px 15px; }
+    .metric-top { align-items: center; color: var(--muted); display: flex; font-size: 11px; justify-content: space-between; }
+    .metric-icon { align-items: center; background: var(--purple-soft); border-radius: 7px; color: var(--purple); display: flex; height: 29px; justify-content: center; width: 29px; }
+    .metric-icon.green { background: var(--green-soft); color: var(--green); }
+    .metric-icon.amber { background: var(--amber-soft); color: var(--amber); }
+    .metric-icon.blue { background: #eaf2ff; color: #4677ce; }
+    .metric-icon svg { height: 15px; width: 15px; }
+    .metric-value { font-size: 25px; font-weight: 650; letter-spacing: -.8px; margin-top: 10px; }
+    .metric-foot { color: var(--muted); font-size: 10px; margin-top: 5px; }
+    .metric-foot .up { color: var(--green); font-weight: 600; }
+    .metric-foot .down { color: var(--red); font-weight: 600; }
+    .chart-grid { display: grid; gap: 16px; grid-template-columns: minmax(0,1.65fr) minmax(280px,1fr); margin-bottom: 17px; }
+    .chart-card { min-height: 280px; padding: 18px 19px 15px; }
+    .card-heading { align-items: flex-start; display: flex; justify-content: space-between; }
+    .card-title { font-size: 12px; font-weight: 650; }
+    .card-caption { color: var(--muted); font-size: 10px; margin-top: 4px; }
+    .select-wrap { position: relative; }
+    .select-wrap select { appearance: none; background: #fff; border: 1px solid var(--line); border-radius: 6px; color: #68758a; cursor: pointer; font-size: 10px; outline: 0; padding: 7px 24px 7px 9px; }
+    .select-wrap:after { border-bottom: 1.5px solid #8490a3; border-right: 1.5px solid #8490a3; content: ""; height: 5px; pointer-events: none; position: absolute; right: 10px; top: 9px; transform: rotate(45deg); width: 5px; }
+    .trend-area { height: 188px; margin-top: 20px; position: relative; }
+    .chart-y { bottom: 19px; color: #9aa5b5; display: flex; flex-direction: column; font-size: 9px; justify-content: space-between; left: 0; position: absolute; top: 4px; }
+    .trend-chart { height: 100%; margin-left: 31px; width: calc(100% - 34px); }
+    .trend-chart .gridline { stroke: #edf0f5; stroke-dasharray: 3 4; stroke-width: 1; }
+    .trend-chart .area { fill: url(#areaFill); }
+    .trend-chart .line { fill: none; stroke: #7962e7; stroke-linecap: round; stroke-linejoin: round; stroke-width: 2.5; }
+    .trend-chart .point { fill: #fff; stroke: #7962e7; stroke-width: 2; }
+    .chart-x { color: #9aa5b5; display: flex; font-size: 9px; justify-content: space-between; margin: -17px 2px 0 34px; }
+    .source-list { display: flex; flex-direction: column; gap: 15px; margin-top: 22px; }
+    .source-row-top { align-items: center; display: flex; font-size: 10px; justify-content: space-between; margin-bottom: 7px; }
+    .source-name { align-items: center; color: #566278; display: flex; gap: 8px; }
+    .source-dot { border-radius: 3px; height: 8px; width: 8px; }
+    .source-count { color: #7e8a9e; }
+    .source-track { background: #f0f2f6; border-radius: 20px; height: 6px; overflow: hidden; }
+    .source-fill { background: #8069e8; border-radius: inherit; height: 100%; }
+    .source-fill.s2 { background: #59b69a; }
+    .source-fill.s3 { background: #efa75d; }
+    .source-fill.s4 { background: #78a2ed; }
+    .source-fill.s5 { background: #bf8adc; }
+    .table-card { overflow: hidden; }
+    .table-heading { align-items: center; display: flex; justify-content: space-between; padding: 18px 19px 15px; }
+    .table-heading .card-caption { margin-top: 5px; }
+    .table-tools { align-items: center; display: flex; gap: 8px; }
+    .search-box { align-items: center; border: 1px solid #e3e7ef; border-radius: 6px; display: flex; gap: 7px; height: 33px; padding: 0 9px; width: 194px; }
+    .search-box svg { color: #929daf; flex: 0 0 auto; height: 14px; width: 14px; }
+    .search-box input { border: 0; color: var(--ink); font-size: 10px; min-width: 0; outline: 0; width: 100%; }
+    .search-box input::placeholder { color: #a0aabb; }
+    .filter-select { background: #fff; border: 1px solid #e3e7ef; border-radius: 6px; color: #657188; font-size: 10px; height: 33px; outline: 0; padding: 0 8px; }
+    .table-scroll { overflow-x: auto; }
+    table { border-collapse: collapse; min-width: 1040px; text-align: left; width: 100%; }
+    thead { background: #fafbfc; }
+    th { border-bottom: 1px solid var(--line); color: #8b96a8; font-size: 9px; font-weight: 600; letter-spacing: .25px; padding: 10px 13px; white-space: nowrap; }
+    td { border-bottom: 1px solid #eff1f5; color: #5e6b80; font-size: 10px; padding: 11px 13px; white-space: nowrap; }
+    tbody tr { cursor: pointer; transition: background .12s ease; }
+    tbody tr:hover { background: #faf9ff; }
+    tbody tr:last-child td { border-bottom: 0; }
+    .lead-link { color: #6552cb; font-weight: 600; }
+    .customer { align-items: center; color: #354259; display: flex; font-weight: 600; gap: 8px; }
+    .customer .avatar { font-size: 9px; height: 27px; width: 27px; }
+    .stage { border-radius: 20px; display: inline-block; font-size: 9px; font-weight: 600; padding: 4px 8px; }
+    .stage.booked { background: #e7f6ef; color: #23815f; }
+    .stage.negotiation { background: #fff3df; color: #a76b1f; }
+    .stage.qualified { background: #efedff; color: #6b59c8; }
+    .stage.new { background: #eaf2ff; color: #4c78c2; }
+    .stage.closed-lost { background: #fff0f1; color: #bb5d65; }
+    .stage.unqualified { background: #f0f2f5; color: #687487; }
+    .table-footer { align-items: center; border-top: 1px solid var(--line); color: #8994a5; display: flex; font-size: 10px; justify-content: space-between; padding: 12px 18px; }
+    .pagination { align-items: center; display: flex; gap: 5px; }
+    .page-btn { align-items: center; background: white; border: 1px solid #e4e8ef; border-radius: 5px; color: #788499; display: inline-flex; height: 25px; justify-content: center; min-width: 25px; padding: 0 7px; }
+    .page-btn.active { background: var(--purple); border-color: var(--purple); color: white; }
+    .page-btn:disabled { cursor: default; opacity: .42; }
+    .empty-state { color: #8490a2; padding: 34px; text-align: center; }
+    .toast { background: #17243c; border-radius: 8px; bottom: 22px; box-shadow: 0 8px 25px #17243c33; color: white; font-size: 12px; opacity: 0; padding: 11px 16px; pointer-events: none; position: fixed; right: 25px; transform: translateY(8px); transition: .2s; z-index: 12; }
+    .toast.show { opacity: 1; transform: translateY(0); }
+    .overlay { background: rgba(19,29,47,.27); inset: 0; opacity: 0; pointer-events: none; position: fixed; transition: .2s; z-index: 9; }
+    .overlay.open { opacity: 1; pointer-events: auto; }
+    .drawer { background: #fff; box-shadow: -12px 0 34px #17243c14; height: 100%; max-width: 490px; overflow-y: auto; padding: 25px; position: fixed; right: 0; top: 0; transform: translateX(105%); transition: transform .25s ease; width: 100%; z-index: 10; }
+    .drawer.open { transform: translateX(0); }
+    .drawer-head { align-items: flex-start; display: flex; justify-content: space-between; }
+    .drawer-close { align-items: center; background: #f5f6f9; border: 0; border-radius: 6px; color: #6c788a; display: flex; height: 30px; justify-content: center; width: 30px; }
+    .drawer-eyebrow { color: #8574d8; font-size: 10px; font-weight: 700; letter-spacing: .65px; text-transform: uppercase; }
+    .drawer h2 { font-size: 22px; letter-spacing: -.5px; margin: 7px 0 5px; }
+    .drawer-lead-id { color: #8b96a8; font-size: 11px; }
+    .drawer-status { margin-top: 12px; }
+    .drawer-section { border-top: 1px solid var(--line); margin-top: 22px; padding-top: 18px; }
+    .drawer-section h3 { font-size: 11px; margin: 0 0 14px; }
+    .detail-grid { display: grid; gap: 16px 14px; grid-template-columns: 1fr 1fr; }
+    .detail-label { color: #8a96a8; font-size: 9px; margin-bottom: 5px; }
+    .detail-value { color: #39475e; font-size: 11px; line-height: 1.5; overflow-wrap: anywhere; }
+    .feedback-list { display: flex; flex-direction: column; gap: 13px; }
+    .feedback-item { border-left: 2px solid #ded8ff; padding-left: 11px; }
+    .feedback-date { color: #8b96a8; font-size: 9px; margin-bottom: 4px; }
+    .feedback-text { color: #59667b; font-size: 10px; line-height: 1.6; }
+    .drawer-empty { color: #909bad; font-size: 10px; }
+    @media (max-width: 1100px) {
+      .sidebar { width: 190px; }
+      .main { margin-left: 190px; }
+      .content { padding-left: 23px; padding-right: 23px; }
+      .topbar { padding-left: 23px; padding-right: 23px; }
+      .metrics { gap: 10px; }
+      .metric { padding-left: 13px; padding-right: 13px; }
+      .table-heading { align-items: flex-start; flex-direction: column; gap: 13px; }
+      .table-tools { flex-wrap: wrap; }
+    }
+    @media (max-width: 760px) {
+      .sidebar { bottom: auto; height: 57px; padding: 12px 16px; right: 0; width: auto; }
+      .brand { padding: 0; }
+      .brand-mark { height: 30px; width: 30px; }
+      .sidebar nav, .sidebar-bottom { display: none; }
+      .main { margin-left: 0; padding-top: 57px; }
+      .topbar { height: 48px; padding: 0 17px; }
+      .content { padding: 23px 16px 32px; }
+      .page-heading { align-items: flex-start; flex-direction: column; gap: 16px; }
+      h1 { font-size: 23px; }
+      .heading-actions { width: 100%; }
+      .heading-actions .button { flex: 1; }
+      .metrics { grid-template-columns: repeat(2,minmax(0,1fr)); }
+      .metric { min-height: 117px; }
+      .chart-grid { grid-template-columns: 1fr; }
+      .chart-card { min-height: 260px; }
+      .table-tools { width: 100%; }
+      .search-box { flex: 1; min-width: 150px; }
+      .filter-select { flex: 1; }
+    }
+    @media (max-width: 420px) {
+      .metrics { gap: 8px; }
+      .metric-value { font-size: 22px; }
+      .metric { padding: 13px; }
+      .table-tools { gap: 6px; }
+      .search-box { flex-basis: 100%; }
+      .table-footer { align-items: flex-start; flex-direction: column; gap: 10px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="brand"><span class="brand-mark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M3 11.5 12 4l9 7.5"/><path d="M5.5 10v10h13V10M9 20v-6h6v6"/></svg></span> northstar</div>
+      <nav aria-label="Main navigation">
+        <div class="nav-label">Workspace</div>
+        <div class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>Overview</div>
+        <div class="nav-item active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="9" cy="8" r="4"/><path d="M3 21v-2a6 6 0 0 1 12 0v2M16 4.5a4 4 0 0 1 0 7.5M18 15a5 5 0 0 1 3 4.5V21"/></svg>Lead details</div>
+        <div class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 3v18h18M7 14l4-4 4 3 6-7"/></svg>Opportunities</div>
+        <div class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 19V5m0 14h17M7 15l4-5 4 3 5-7"/></svg>Reports</div>
+        <div class="nav-spacer"></div>
+        <div class="nav-label">Manage</div>
+        <div class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="m19.4 15 .1.1 1.4 1.1-1.4 2.4-1.7-.6a8 8 0 0 1-1.5.9l-.3 1.8h-2.8l-.3-1.8a8 8 0 0 1-1.5-.9l-1.7.6-1.4-2.4 1.4-1.1a7 7 0 0 1 0-1.8l-1.4-1.1 1.4-2.4 1.7.6a8 8 0 0 1 1.5-.9l.3-1.8h2.8l.3 1.8a8 8 0 0 1 1.5.9l1.7-.6 1.4 2.4-1.4 1.1a7 7 0 0 1 0 1.7Z"/></svg>Settings</div>
+      </nav>
+      <div class="sidebar-bottom">
+        <div class="workspace"><span class="avatar">AR</span><div>Alex Rivera<small>Sales manager</small></div></div>
+      </div>
+    </aside>
+    <main class="main">
+      <header class="topbar">
+        <div class="crumb">Workspace <span style="padding:0 7px;color:#c0c7d2">/</span> <strong>Lead details</strong></div>
+        <div class="top-actions">
+          <button class="icon-button" aria-label="Help"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" height="17" width="17"><circle cx="12" cy="12" r="9"/><path d="M9.6 9a2.5 2.5 0 1 1 4.2 1.8c-1.1.9-1.8 1.3-1.8 2.7M12 17h.01"/></svg></button>
+          <button class="icon-button" aria-label="Notifications"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" height="17" width="17"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4"/></svg><span class="notice-dot"></span></button>
+          <span class="top-divider"></span><span class="avatar">AR</span>
+        </div>
+      </header>
+      <section class="content">
+        <div class="page-heading">
+          <div><h1>Lead overview</h1><p class="subtitle">A clearer view of your pipeline, lead sources, and conversations.</p></div>
+          <div class="heading-actions">
+            <label class="button" for="import-file"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 15V3m0 0L8 7m4-4 4 4M5 13v6a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-6"/></svg>Import CSV<input id="import-file" type="file" accept=".csv,text/csv"></label>
+            <button class="button primary" id="export-button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12m0 0 4-4m-4 4-4-4M5 17v2a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-2"/></svg>Export CSV</button>
+          </div>
+        </div>
+        <div class="sample-note" id="data-note"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 11v5m0-8h.01"/></svg><span><strong>Preview data:</strong> fictional sample leads shown. Import a Salesforce lead detail CSV to view your own data; your file stays in this browser.</span></div>
+        <section class="metrics" aria-label="Lead metrics">
+          <article class="card metric"><div class="metric-top">Total leads<span class="metric-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M16 21v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2"/><circle cx="9.5" cy="7" r="4"/><path d="M20 21v-2a4 4 0 0 0-3-3.9M16 3.1a4 4 0 0 1 0 7.8"/></svg></span></div><div class="metric-value" id="metric-total">—</div><div class="metric-foot"><span class="up">+12.8%</span> vs. previous period</div></article>
+          <article class="card metric"><div class="metric-top">Converted<span class="metric-icon green"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 12.5 9 17l11-11"/></svg></span></div><div class="metric-value" id="metric-converted">—</div><div class="metric-foot"><span class="up" id="metric-rate">—</span> conversion rate</div></article>
+          <article class="card metric"><div class="metric-top">In negotiation<span class="metric-icon amber"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 11.5a8.4 8.4 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.4 8.4 0 0 1-3.8-.9L3 21l1.9-5.7a8.4 8.4 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.4 8.4 0 0 1 3.8-.9h.5a8.5 8.5 0 0 1 8 8z"/></svg></span></div><div class="metric-value" id="metric-negotiation">—</div><div class="metric-foot">Active opportunities</div></article>
+          <article class="card metric"><div class="metric-top">Pipeline value<span class="metric-icon blue"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2v20m5-15H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></span></div><div class="metric-value" id="metric-pipeline">—</div><div class="metric-foot">Estimated budget · active leads</div></article>
+        </section>
+        <section class="chart-grid">
+          <article class="card chart-card">
+            <div class="card-heading"><div><div class="card-title">Lead activity</div><div class="card-caption">New leads created over time</div></div><div class="select-wrap"><select id="trend-range" aria-label="Lead activity date range"><option value="30">Last 30 days</option><option value="7">Last 7 days</option><option value="all">All time</option></select></div></div>
+            <div class="trend-area">
+              <div class="chart-y"><span>40</span><span>30</span><span>20</span><span>10</span><span>0</span></div>
+              <svg id="trend-chart" class="trend-chart" viewBox="0 0 600 180" preserveAspectRatio="none" role="img" aria-label="Lead activity trend chart">
+                <defs><linearGradient id="areaFill" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#8d79ec" stop-opacity=".22"/><stop offset="1" stop-color="#8d79ec" stop-opacity="0"/></linearGradient></defs>
+                <line class="gridline" x1="0" y1="7" x2="600" y2="7"/><line class="gridline" x1="0" y1="47" x2="600" y2="47"/><line class="gridline" x1="0" y1="87" x2="600" y2="87"/><line class="gridline" x1="0" y1="127" x2="600" y2="127"/><line class="gridline" x1="0" y1="167" x2="600" y2="167"/>
+                <path id="trend-area" class="area" d=""/><path id="trend-line" class="line" d=""/><g id="trend-points"></g>
+              </svg>
+            </div>
+            <div class="chart-x" id="trend-labels"></div>
+          </article>
+          <article class="card chart-card">
+            <div class="card-heading"><div><div class="card-title">Leads by sub-source</div><div class="card-caption">Where your leads are coming from</div></div><span class="card-caption" id="source-total"></span></div>
+            <div class="source-list" id="source-list"></div>
+          </article>
+        </section>
+        <section class="card table-card">
+          <div class="table-heading">
+            <div><div class="card-title">Lead details</div><div class="card-caption" id="table-count">Explore your latest leads and their activity.</div></div>
+            <div class="table-tools">
+              <label class="search-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="10.8" cy="10.8" r="6.8"/><path d="m16 16 5 5"/></svg><input id="search" type="search" placeholder="Search leads..." aria-label="Search leads"></label>
+              <select class="filter-select" id="stage-filter" aria-label="Filter by stage"><option value="">All stages</option></select>
+              <select class="filter-select" id="source-filter" aria-label="Filter by sub-source"><option value="">All sources</option></select>
+            </div>
+          </div>
+          <div class="table-scroll"><table>
+            <thead><tr><th>LEAD ID</th><th>CUSTOMER</th><th>SUB-SOURCE</th><th>CREATED</th><th>ASSIGNED TO</th><th>OPPORTUNITY</th><th>STAGE</th><th>BUDGET (₹ L)</th></tr></thead>
+            <tbody id="lead-rows"></tbody>
+          </table></div>
+          <div class="table-footer"><span id="pagination-label">Showing leads</span><div class="pagination" id="pagination"></div></div>
+        </section>
+      </section>
+    </main>
+  </div>
+  <div class="overlay" id="overlay"></div>
+  <aside class="drawer" id="drawer" aria-label="Lead details" aria-hidden="true"></aside>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <script>
+    const sampleLeads = [
+      {leadId:"L-25 / 09 / 2026-441725",created:"2026-09-28T10:15:00+05:30",name:"Aarav Mehta",mobile:"+91 98765 43210",subSource:"Google Ads",utmSource:"google",utmCampaign:"Diwali_2026_Search",utmContent:"2bhk_creative_a",utmMedium:"cpc",assigned:"Priya Sharma",opportunity:"Opp-22 / 09 / 2026-12090",stage:"Negotiation",bedroom:"2 BHK",purpose:"Investment",budgetMin:85,budgetMax:110,feedback:[["2026-09-28T12:30:00+05:30","Interested in 2 BHK options near the new metro line. Requested floor plans and a weekend site visit."],["2026-09-30T16:10:00+05:30","Shared floor plans. Comparing two projects; follow up after discussing with family."]]},
+      {leadId:"L-25 / 09 / 2026-441698",created:"2026-09-27T14:42:00+05:30",name:"Isha Kapoor",mobile:"+91 98123 45678",subSource:"Website",utmSource:"website",utmCampaign:"Homepage_Enquiry",utmContent:"hero_form",utmMedium:"organic",assigned:"Rahul Nair",opportunity:"",stage:"Qualified",bedroom:"3 BHK",purpose:"Self Use",budgetMin:120,budgetMax:160,feedback:[["2026-09-27T15:20:00+05:30","Looking for a ready-to-move 3 BHK. Prefers a call after 6 PM."]]},
+      {leadId:"L-25 / 09 / 2026-441642",created:"2026-09-26T09:05:00+05:30",name:"Kabir Desai",mobile:"+91 99234 56789",subSource:"Meta Ads",utmSource:"facebook",utmCampaign:"West_Pune_Launch",utmContent:"carousel_amenities",utmMedium:"paid_social",assigned:"Priya Sharma",opportunity:"Opp-22 / 09 / 2026-12043",stage:"Booked",bedroom:"2 BHK",purpose:"Self Use",budgetMin:90,budgetMax:125,feedback:[["2026-09-26T11:15:00+05:30","Site visit completed. Customer liked the amenities and is reviewing the payment plan."],["2026-09-29T10:45:00+05:30","Booking form submitted; token amount received."]]},
+      {leadId:"L-25 / 09 / 2026-441587",created:"2026-09-24T17:32:00+05:30",name:"Ananya Rao",mobile:"+91 97654 32109",subSource:"Referral",utmSource:"",utmCampaign:"",utmContent:"",utmMedium:"",assigned:"Meera Iyer",opportunity:"",stage:"Lead Status: Contacted",bedroom:"3 BHK",purpose:"Self Use",budgetMin:150,budgetMax:200,feedback:[["2026-09-25T12:00:00+05:30","Referred by existing customer. Wants a 3 BHK near Baner; appointment planned for Saturday."]]},
+      {leadId:"L-25 / 09 / 2026-441521",created:"2026-09-23T11:50:00+05:30",name:"Vihaan Joshi",mobile:"+91 98901 23456",subSource:"Google Ads",utmSource:"google",utmCampaign:"Diwali_2026_Search",utmContent:"location_baner",utmMedium:"cpc",assigned:"Rahul Nair",opportunity:"Opp-22 / 09 / 2026-11997",stage:"Negotiation",bedroom:"4 BHK",purpose:"Investment",budgetMin:200,budgetMax:280,feedback:[["2026-09-23T13:05:00+05:30","Asked for a 4 BHK quote and availability. Wants to negotiate on the floor premium."],["2026-09-25T17:30:00+05:30","Sent revised pricing. Decision expected early next week."]]},
+      {leadId:"L-25 / 09 / 2026-441483",created:"2026-09-21T13:18:00+05:30",name:"Sara Fernandes",mobile:"+91 98220 12345",subSource:"Property Portal",utmSource:"housing",utmCampaign:"Pune_Properties",utmContent:"listing_392",utmMedium:"referral",assigned:"Meera Iyer",opportunity:"",stage:"Lead Status: New",bedroom:"2 BHK",purpose:"Self Use",budgetMin:75,budgetMax:100,feedback:[]},
+      {leadId:"L-25 / 09 / 2026-441412",created:"2026-09-19T16:04:00+05:30",name:"Arjun Kulkarni",mobile:"+91 99887 65432",subSource:"Walk-in",utmSource:"",utmCampaign:"",utmContent:"",utmMedium:"",assigned:"Priya Sharma",opportunity:"Opp-22 / 09 / 2026-11942",stage:"Closed Lost",bedroom:"2 BHK",purpose:"Investment",budgetMin:80,budgetMax:105,feedback:[["2026-09-19T17:15:00+05:30","Walk-in enquiry. Looking for an investment unit; price was above current budget."],["2026-09-22T14:30:00+05:30","Customer decided to pause purchase plans for now."]]},
+      {leadId:"L-25 / 09 / 2026-441366",created:"2026-09-18T10:23:00+05:30",name:"Diya Shah",mobile:"+91 98450 11223",subSource:"Google Ads",utmSource:"google",utmCampaign:"Retargeting_Sept",utmContent:"testimonial_video",utmMedium:"cpc",assigned:"Rahul Nair",opportunity:"",stage:"Lead Status: Contacted",bedroom:"3 BHK",purpose:"Self Use",budgetMin:130,budgetMax:175,feedback:[["2026-09-18T12:40:00+05:30","Asked for availability, amenities and a callback after sharing the brochure."]]},
+      {leadId:"L-25 / 09 / 2026-441301",created:"2026-09-15T08:57:00+05:30",name:"Rohan Malhotra",mobile:"+91 98700 45678",subSource:"Meta Ads",utmSource:"instagram",utmCampaign:"West_Pune_Launch",utmContent:"reel_location",utmMedium:"paid_social",assigned:"Meera Iyer",opportunity:"Opp-22 / 09 / 2026-11883",stage:"Negotiation",bedroom:"3 BHK",purpose:"Investment",budgetMin:140,budgetMax:190,feedback:[["2026-09-15T10:10:00+05:30","Interested in rental yield. Sent investment calculator and project brochure."],["2026-09-19T11:45:00+05:30","Follow-up call completed. Requested revised quote including parking."]]},
+      {leadId:"L-25 / 09 / 2026-441245",created:"2026-09-12T15:38:00+05:30",name:"Mira Patil",mobile:"+91 97666 78901",subSource:"Website",utmSource:"website",utmCampaign:"Project_Page_Rivera",utmContent:"contact_form",utmMedium:"organic",assigned:"Priya Sharma",opportunity:"",stage:"Lead Status: New",bedroom:"2 BHK",purpose:"Self Use",budgetMin:90,budgetMax:115,feedback:[]},
+      {leadId:"L-25 / 09 / 2026-441188",created:"2026-09-09T12:11:00+05:30",name:"Aditya Menon",mobile:"+91 98989 12121",subSource:"Referral",utmSource:"",utmCampaign:"",utmContent:"",utmMedium:"",assigned:"Rahul Nair",opportunity:"Opp-22 / 09 / 2026-11767",stage:"Booked",bedroom:"3 BHK",purpose:"Self Use",budgetMin:135,budgetMax:170,feedback:[["2026-09-09T13:00:00+05:30","Referred by a resident. Visited the sample flat with family."],["2026-09-12T16:20:00+05:30","Booking confirmed; customer selected a 3 BHK garden-facing unit."]]},
+      {leadId:"L-25 / 09 / 2026-441123",created:"2026-09-05T09:32:00+05:30",name:"Nisha Verma",mobile:"+91 98111 22334",subSource:"Property Portal",utmSource:"99acres",utmCampaign:"Pune_Properties",utmContent:"listing_518",utmMedium:"referral",assigned:"Meera Iyer",opportunity:"",stage:"Lead Status: Contacted",bedroom:"4 BHK",purpose:"Self Use",budgetMin:220,budgetMax:300,feedback:[["2026-09-05T11:10:00+05:30","Looking for a spacious home for a family of five. Exploring 4 BHK options."]]}
+    ];
+    const columns = ["Lead Id","Lead Created Date","Customer Name","Mobile","Sub-Source","UTM Source","UTM Campaign","UTM Content","UTM Medium","Assigned To","Opportunity Id","Stage","Bedroom","Purpose of Buying","Budget Min (₹ L)","Budget Max (₹ L)","Call Feedback"];
+    let leads = sampleLeads;
+    let currentPage = 1;
+    const pageSize = 7;
+    const $ = (selector) => document.querySelector(selector);
+    const escapeHtml = (value) => String(value ?? "").replace(/[&<>"']/g, (char) => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[char]));
+    const initials = (name) => String(name || "?").split(/\s+/).slice(0,2).map((part) => part[0] || "").join("").toUpperCase();
+    const parseDate = (value) => {
+      const nativeDate = new Date(value);
+      if (!Number.isNaN(nativeDate.getTime())) return nativeDate;
+      const match = String(value || "").match(/^(\d{1,2})[-\s]([a-z]{3,9})[-\s](\d{4})(?:,?\s+(\d{1,2}):(\d{2})\s*(am|pm))?$/i);
+      if (!match) return null;
+      const month = ["jan","feb","mar","apr","may","jun","jul","aug","sep","oct","nov","dec"].findIndex((item)=>match[2].toLowerCase().startsWith(item));
+      if (month < 0) return null;
+      let hour = Number(match[4] || 0);
+      if (match[6]) hour = hour % 12 + (match[6].toLowerCase() === "pm" ? 12 : 0);
+      return new Date(Date.UTC(Number(match[3]),month,Number(match[1]),hour,Number(match[5] || 0))-330*60*1000);
+    };
+    const formatDate = (value, includeTime = false) => {
+      if (!value) return "—";
+      const date = parseDate(value);
+      if (!date) return String(value);
+      const options = {day:"2-digit",month:"short",year:"numeric",timeZone:"Asia/Kolkata",...(includeTime ? {hour:"2-digit",minute:"2-digit",hour12:true} : {})};
+      return new Intl.DateTimeFormat("en-IN", options).format(date);
+    };
+    const normalizedStage = (stage) => String(stage || "Lead Status: New").replace(/^Lead Status:\s*/i, "");
+    const istDay = (value) => {
+      const date = parseDate(value);
+      if (!date) return null;
+      const day = new Date(date.getTime()+330*60*1000);
+      day.setUTCHours(0,0,0,0);
+      return day;
+    };
+    const stageClass = (stage) => {
+      const normalized = normalizedStage(stage).toLowerCase();
+      if (normalized === "booked" || normalized === "closed won") return "booked";
+      if (normalized === "negotiation") return "negotiation";
+      if (normalized === "qualified" || normalized === "proposal") return "qualified";
+      if (normalized === "new" || normalized === "contacted") return "new";
+      if (normalized.includes("lost")) return "closed-lost";
+      return "unqualified";
+    };
+    const budgetText = (lead) => {
+      const min = Number(lead.budgetMin);
+      const max = Number(lead.budgetMax);
+      if (Number.isFinite(min) && Number.isFinite(max)) return `${min}–${max}`;
+      return Number.isFinite(min) ? `${min}+` : "—";
+    };
+    const activeLeads = () => leads.filter((lead) => !["booked","closed lost","closed won","unqualified"].includes(normalizedStage(lead.stage).toLowerCase()));
+    function filteredLeads() {
+      const term = $("#search").value.trim().toLowerCase();
+      const stage = $("#stage-filter").value;
+      const source = $("#source-filter").value;
+      return leads.filter((lead) => {
+        const haystack = [lead.leadId,lead.name,lead.mobile,lead.subSource,lead.assigned,lead.opportunity,lead.stage].join(" ").toLowerCase();
+        return (!term || haystack.includes(term)) && (!stage || normalizedStage(lead.stage) === stage) && (!source || (lead.subSource || "Unknown") === source);
+      }).sort((a,b) => (parseDate(b.created)?.getTime() || 0) - (parseDate(a.created)?.getTime() || 0));
+    }
+    function updateMetrics() {
+      const booked = leads.filter((lead) => ["booked","closed won"].includes(normalizedStage(lead.stage).toLowerCase())).length;
+      const negotiation = leads.filter((lead) => normalizedStage(lead.stage).toLowerCase() === "negotiation").length;
+      const pipeline = activeLeads().reduce((sum, lead) => sum + ((Number(lead.budgetMin)||0) + (Number(lead.budgetMax)||0))/2, 0);
+      $("#metric-total").textContent = leads.length.toLocaleString("en-IN");
+      $("#metric-converted").textContent = booked.toLocaleString("en-IN");
+      $("#metric-rate").textContent = `${leads.length ? Math.round(booked / leads.length * 100) : 0}%`;
+      $("#metric-negotiation").textContent = negotiation.toLocaleString("en-IN");
+      $("#metric-pipeline").textContent = `₹${pipeline.toLocaleString("en-IN",{maximumFractionDigits:0})}L`;
+    }
+    function updateFilters() {
+      const stageSelect = $("#stage-filter"), sourceSelect = $("#source-filter");
+      const selectedStage = stageSelect.value, selectedSource = sourceSelect.value;
+      const stages = [...new Set(leads.map((lead) => normalizedStage(lead.stage)))].sort();
+      const sources = [...new Set(leads.map((lead) => lead.subSource || "Unknown"))].sort();
+      stageSelect.innerHTML = `<option value="">All stages</option>${stages.map((stage) => `<option value="${escapeHtml(stage)}">${escapeHtml(stage)}</option>`).join("")}`;
+      sourceSelect.innerHTML = `<option value="">All sources</option>${sources.map((source) => `<option value="${escapeHtml(source)}">${escapeHtml(source)}</option>`).join("")}`;
+      if (stages.includes(selectedStage)) stageSelect.value = selectedStage;
+      if (sources.includes(selectedSource)) sourceSelect.value = selectedSource;
+    }
+    function renderTable() {
+      const filtered = filteredLeads();
+      const pages = Math.max(1,Math.ceil(filtered.length/pageSize));
+      currentPage = Math.min(currentPage,pages);
+      const start = (currentPage-1)*pageSize;
+      const page = filtered.slice(start,start+pageSize);
+      $("#lead-rows").innerHTML = page.length ? page.map((lead) => `<tr data-lead="${escapeHtml(lead.leadId)}">
+        <td><span class="lead-link">${escapeHtml(lead.leadId)}</span></td>
+        <td><span class="customer"><span class="avatar">${escapeHtml(initials(lead.name))}</span>${escapeHtml(lead.name || "—")}</span></td>
+        <td>${escapeHtml(lead.subSource || "—")}</td><td>${escapeHtml(formatDate(lead.created))}</td><td>${escapeHtml(lead.assigned || "—")}</td>
+        <td>${escapeHtml(lead.opportunity || "—")}</td><td><span class="stage ${stageClass(lead.stage)}">${escapeHtml(normalizedStage(lead.stage))}</span></td><td>${escapeHtml(budgetText(lead))}</td>
+      </tr>`).join("") : `<tr><td class="empty-state" colspan="8">No leads match those filters.</td></tr>`;
+      $("#table-count").textContent = `${filtered.length.toLocaleString("en-IN")} leads · Click any row to view lead details and call feedback.`;
+      $("#pagination-label").textContent = filtered.length ? `Showing ${start+1}–${Math.min(start+pageSize,filtered.length)} of ${filtered.length}` : "No leads to show";
+      $("#pagination").innerHTML = `<button class="page-btn" data-page="${currentPage-1}" ${currentPage===1?"disabled":""} aria-label="Previous page">‹</button>${Array.from({length:pages},(_,index)=>`<button class="page-btn ${currentPage===index+1?"active":""}" data-page="${index+1}">${index+1}</button>`).join("")}<button class="page-btn" data-page="${currentPage+1}" ${currentPage===pages?"disabled":""} aria-label="Next page">›</button>`;
+      $("#lead-rows").querySelectorAll("tr[data-lead]").forEach((row) => row.addEventListener("click", () => openDrawer(leads.find((lead) => lead.leadId === row.dataset.lead))));
+      $("#pagination").querySelectorAll("button[data-page]").forEach((button) => button.addEventListener("click", () => { currentPage = Number(button.dataset.page); renderTable(); }));
+    }
+    function renderSources() {
+      const counts = new Map();
+      leads.forEach((lead) => { const source = lead.subSource || "Unknown"; counts.set(source,(counts.get(source)||0)+1); });
+      const sorted = [...counts.entries()].sort((a,b)=>b[1]-a[1]).slice(0,5);
+      const max = Math.max(1,...sorted.map(([,count])=>count));
+      const classes = ["","s2","s3","s4","s5"];
+      $("#source-total").textContent = `${leads.length} leads`;
+      $("#source-list").innerHTML = sorted.length ? sorted.map(([name,count],index)=>`<div><div class="source-row-top"><span class="source-name"><span class="source-dot" style="background:${["#8069e8","#59b69a","#efa75d","#78a2ed","#bf8adc"][index]}"></span>${escapeHtml(name)}</span><span class="source-count">${count} · ${leads.length?Math.round(count/leads.length*100):0}%</span></div><div class="source-track"><div class="source-fill ${classes[index]}" style="width:${count/max*100}%"></div></div></div>`).join("") : `<div class="drawer-empty">No source data yet.</div>`;
+    }
+    function renderTrend() {
+      const range = $("#trend-range").value;
+      let days = range === "7" ? 7 : range === "30" ? 30 : 0;
+      const today = istDay(new Date().toISOString());
+      let startDate;
+      if (days) { startDate = new Date(today); startDate.setUTCDate(startDate.getUTCDate()-days+1); }
+      else if (leads.length) { startDate = new Date(Math.min(...leads.map((lead)=>istDay(lead.created)?.getTime() || today.getTime()))); }
+      else startDate = new Date(today);
+      const endDate = today;
+      const countDays = Math.max(1,Math.min(30,Math.floor((endDate-startDate)/86400000)+1));
+      const buckets = Array(countDays).fill(0);
+      leads.forEach((lead) => {
+        const date = istDay(lead.created);
+        if (!date) return;
+        const index = Math.floor((date-startDate)/86400000);
+        if (index>=0 && index<countDays) buckets[index]++;
+      });
+      const pointCount = Math.min(10,countDays), grouped = Array(pointCount).fill(0);
+      buckets.forEach((count,index)=>grouped[Math.min(pointCount-1,Math.floor(index/countDays*pointCount))]+=count);
+      const max = Math.max(4,...grouped);
+      const coords = grouped.map((count,index)=>({x:pointCount===1?300:12+index*(576/(pointCount-1)),y:167-(count/max*145)}));
+      const line = coords.map((point,index)=>`${index?"L":"M"}${point.x},${point.y}`).join(" ");
+      $("#trend-line").setAttribute("d",line);
+      $("#trend-area").setAttribute("d",`${line} L${coords[coords.length-1].x},167 L${coords[0].x},167 Z`);
+      $("#trend-points").innerHTML = coords.map((point)=>`<circle class="point" cx="${point.x}" cy="${point.y}" r="3.5"/>`).join("");
+      const labelIndexes = [...new Set([0,Math.floor((pointCount-1)/2),pointCount-1])];
+      $("#trend-labels").innerHTML = labelIndexes.map((index)=>{const date=new Date(startDate);date.setUTCDate(date.getUTCDate()+Math.floor((index+.5)*countDays/pointCount));return `<span>${escapeHtml(new Intl.DateTimeFormat("en-IN",{day:"2-digit",month:"short",timeZone:"UTC"}).format(date))}</span>`;}).join("");
+      $(".chart-y").innerHTML = [max,Math.round(max*.75),Math.round(max*.5),Math.round(max*.25),0].map((value)=>`<span>${value}</span>`).join("");
+      document.querySelectorAll(".gridline").forEach((lineElement,index)=>lineElement.setAttribute("y1",String(7+index*40)));
+    }
+    function openDrawer(lead) {
+      if (!lead) return;
+      const feedback = (lead.feedback || []).slice().sort((a,b)=>(parseDate(a[0])?.getTime() || 0)-(parseDate(b[0])?.getTime() || 0));
+      const fields = [
+        ["Mobile",lead.mobile],["Lead created",formatDate(lead.created,true)],["Assigned to",lead.assigned],["Sub-source",lead.subSource],
+        ["Opportunity ID",lead.opportunity],["Stage",normalizedStage(lead.stage)],["Bedroom",lead.bedroom],["Purpose of buying",lead.purpose],
+        ["Budget min",lead.budgetMin == null || lead.budgetMin === "" ? "" : `₹${lead.budgetMin} L`],["Budget max",lead.budgetMax == null || lead.budgetMax === "" ? "" : `₹${lead.budgetMax} L`],
+        ["UTM source",lead.utmSource],["UTM campaign",lead.utmCampaign],["UTM content",lead.utmContent],["UTM medium",lead.utmMedium]
+      ];
+      $("#drawer").innerHTML = `<div class="drawer-head"><div><div class="drawer-eyebrow">Lead profile</div><h2>${escapeHtml(lead.name || "Unnamed lead")}</h2><div class="drawer-lead-id">${escapeHtml(lead.leadId)}</div><div class="drawer-status"><span class="stage ${stageClass(lead.stage)}">${escapeHtml(normalizedStage(lead.stage))}</span></div></div><button class="drawer-close" id="drawer-close" aria-label="Close details">✕</button></div><section class="drawer-section"><h3>Lead information</h3><div class="detail-grid">${fields.map(([label,value])=>`<div><div class="detail-label">${escapeHtml(label)}</div><div class="detail-value">${escapeHtml(value || "—")}</div></div>`).join("")}</div></section><section class="drawer-section"><h3>Call feedback <span style="color:#939eb0;font-weight:400">(${feedback.length})</span></h3>${feedback.length?`<div class="feedback-list">${feedback.map(([date,text])=>`<div class="feedback-item"><div class="feedback-date">${escapeHtml(formatDate(date,true))}</div><div class="feedback-text">${escapeHtml(text)}</div></div>`).join("")}</div>`:`<div class="drawer-empty">No call feedback has been recorded for this lead.</div>`}</section>`;
+      $("#drawer").classList.add("open"); $("#overlay").classList.add("open"); $("#drawer").setAttribute("aria-hidden","false");
+      $("#drawer-close").addEventListener("click",closeDrawer);
+    }
+    function closeDrawer() { $("#drawer").classList.remove("open"); $("#overlay").classList.remove("open"); $("#drawer").setAttribute("aria-hidden","true"); }
+    let toastTimer;
+    function notify(message) { const toast=$("#toast"); toast.textContent=message; toast.classList.add("show"); clearTimeout(toastTimer); toastTimer=setTimeout(()=>toast.classList.remove("show"),3200); }
+    function parseCsv(text) {
+      const rows=[]; let row=[],field="",quoted=false;
+      for(let index=0;index<text.length;index++){
+        const char=text[index],next=text[index+1];
+        if(quoted){if(char==='"'&&next==='"'){field+='"';index++;}else if(char==='"')quoted=false;else field+=char;}
+        else if(char==='"')quoted=true;
+        else if(char===","){row.push(field);field="";}
+        else if(char==="\n"){row.push(field);rows.push(row);row=[];field="";}
+        else if(char!=="\r")field+=char;
+      }
+      if(quoted) throw new Error("The CSV has an unclosed quoted field.");
+      if(field.length||row.length){row.push(field);rows.push(row);}
+      return rows.filter((values)=>values.some((value)=>value.trim()!==""));
+    }
+    function importCsv(text) {
+      const rows=parseCsv(text);
+      if(rows.length<2) throw new Error("The CSV needs a header row and at least one lead.");
+      const headers=rows[0].map((value)=>value.trim().replace(/^\uFEFF/,"").toLowerCase());
+      const find=(...names)=>headers.findIndex((header)=>names.some((name)=>header===name.toLowerCase()));
+      const indexes={
+        leadId:find("lead id"),name:find("customer name"),created:find("lead created date"),mobile:find("mobile"),
+        subSource:find("sub-source","sub source"),utmSource:find("utm source"),utmCampaign:find("utm campaign"),
+        utmContent:find("utm content"),utmMedium:find("utm medium"),assigned:find("assigned to"),
+        opportunity:find("opportunity id"),stage:find("stage"),bedroom:find("bedroom"),
+        purpose:find("purpose of buying"),budgetMin:find("budget min (₹ l)","budget min"),budgetMax:find("budget max (₹ l)","budget max"),
+        callFeedback:find("call feedback")
+      };
+      if(indexes.leadId<0) throw new Error('Could not find a "Lead Id" column in this CSV.');
+      const get=(cells,key)=>indexes[key]<0?"":(cells[indexes[key]]||"").trim();
+      const imported=rows.slice(1).map((cells)=>({
+        leadId:get(cells,"leadId"),name:get(cells,"name"),created:get(cells,"created"),mobile:get(cells,"mobile"),
+        subSource:get(cells,"subSource"),utmSource:get(cells,"utmSource"),utmCampaign:get(cells,"utmCampaign"),
+        utmContent:get(cells,"utmContent"),utmMedium:get(cells,"utmMedium"),assigned:get(cells,"assigned"),
+        opportunity:get(cells,"opportunity"),stage:get(cells,"stage"),bedroom:get(cells,"bedroom"),purpose:get(cells,"purpose"),
+        budgetMin:get(cells,"budgetMin"),budgetMax:get(cells,"budgetMax"),
+        feedback:get(cells,"callFeedback").split(/\r?\n/).filter(Boolean).map((line)=>{const split=line.match(/^(.+?)\s+:\s+([\s\S]*)$/);return split?[split[1],split[2]]:["",line];})
+      })).filter((lead)=>lead.leadId);
+      if(!imported.length) throw new Error("No non-empty Lead Id values were found.");
+      leads=imported; currentPage=1; updateFilters(); updateMetrics(); renderTable(); renderSources(); renderTrend();
+      $("#data-note").innerHTML=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 11v5m0-8h.01"/></svg><span><strong>Imported data:</strong> ${imported.length} lead${imported.length===1?"":"s"} loaded from your CSV. Data remains in this browser session and is not uploaded anywhere.</span>`;
+      notify(`Imported ${imported.length} lead${imported.length===1?"":"s"} successfully.`);
+    }
+    function csvValue(value) { return `"${String(value ?? "").replace(/"/g,'""')}"`; }
+    function exportCsv() {
+      const rows=[columns,...filteredLeads().map((lead)=>[
+        lead.leadId,formatDate(lead.created,true),lead.name,lead.mobile,lead.subSource,lead.utmSource,lead.utmCampaign,lead.utmContent,lead.utmMedium,lead.assigned,lead.opportunity,lead.stage,lead.bedroom,lead.purpose,lead.budgetMin,lead.budgetMax,(lead.feedback||[]).slice().sort((a,b)=>(parseDate(a[0])?.getTime() || 0)-(parseDate(b[0])?.getTime() || 0)).map(([date,text])=>`${formatDate(date,true)} : ${text}`).join("\n")
+      ])];
+      const csv="\uFEFF"+rows.map((row)=>row.map(csvValue).join(",")).join("\r\n");
+      const url=URL.createObjectURL(new Blob([csv],{type:"text/csv;charset=utf-8"}));
+      const link=document.createElement("a"); link.href=url; link.download=`Lead_Detail_Export_${new Intl.DateTimeFormat("en-GB",{day:"2-digit",month:"short",year:"numeric"}).format(new Date()).replaceAll(" ","-")}.csv`;
+      document.body.appendChild(link); link.click(); link.remove(); setTimeout(()=>URL.revokeObjectURL(url),1000);
+      notify(`Exported ${filteredLeads().length} lead${filteredLeads().length===1?"":"s"} to CSV.`);
+    }
+    $("#search").addEventListener("input",()=>{currentPage=1;renderTable();});
+    $("#stage-filter").addEventListener("change",()=>{currentPage=1;renderTable();});
+    $("#source-filter").addEventListener("change",()=>{currentPage=1;renderTable();});
+    $("#trend-range").addEventListener("change",renderTrend);
+    $("#export-button").addEventListener("click",exportCsv);
+    $("#overlay").addEventListener("click",closeDrawer);
+    document.addEventListener("keydown",(event)=>{if(event.key==="Escape")closeDrawer();});
+    $("#import-file").addEventListener("change",async(event)=>{
+      const file=event.target.files[0]; if(!file)return;
+      try{importCsv(await file.text());}catch(error){notify(`Import failed: ${error.message}`);}
+      event.target.value="";
+    });
+    updateFilters(); updateMetrics(); renderTable(); renderSources(); renderTrend();
+  </script>
+</body>
+</html>
