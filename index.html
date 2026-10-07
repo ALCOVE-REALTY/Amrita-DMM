@@ -339,10 +339,10 @@
     const stageClass = (stage) => {
       const normalized = normalizedStage(stage).toLowerCase();
       if (normalized === "booked" || normalized === "closed won") return "booked";
-      if (normalized === "negotiation") return "negotiation";
-      if (normalized === "qualified" || normalized === "proposal") return "qualified";
-      if (normalized === "new" || normalized === "contacted") return "new";
-      if (normalized.includes("lost")) return "closed-lost";
+      if (normalized.startsWith("negotiation")) return "negotiation";
+      if (normalized.includes("qualified") || normalized === "site visit done" || normalized === "unit blocked") return "qualified";
+      if (["new","contacted","follow-up","registered"].includes(normalized)) return "new";
+      if (normalized.includes("lost") || normalized.includes("cancelled")) return "closed-lost";
       return "unqualified";
     };
     const budgetText = (lead) => {
@@ -351,7 +351,7 @@
       if (Number.isFinite(min) && Number.isFinite(max)) return `${min}–${max}`;
       return Number.isFinite(min) ? `${min}+` : "—";
     };
-    const activeLeads = () => leads.filter((lead) => !["booked","closed lost","closed won","unqualified"].includes(normalizedStage(lead.stage).toLowerCase()));
+    const activeLeads = () => leads.filter((lead) => !["booked","closed lost","closed won","unqualified","booking cancelled"].includes(normalizedStage(lead.stage).toLowerCase()));
     function filteredLeads() {
       const term = $("#search").value.trim().toLowerCase();
       const stage = $("#stage-filter").value;
@@ -363,7 +363,7 @@
     }
     function updateMetrics() {
       const booked = leads.filter((lead) => ["booked","closed won"].includes(normalizedStage(lead.stage).toLowerCase())).length;
-      const negotiation = leads.filter((lead) => normalizedStage(lead.stage).toLowerCase() === "negotiation").length;
+      const negotiation = leads.filter((lead) => normalizedStage(lead.stage).toLowerCase().startsWith("negotiation")).length;
       const pipeline = activeLeads().reduce((sum, lead) => sum + ((Number(lead.budgetMin)||0) + (Number(lead.budgetMax)||0))/2, 0);
       $("#metric-total").textContent = leads.length.toLocaleString("en-IN");
       $("#metric-converted").textContent = booked.toLocaleString("en-IN");
